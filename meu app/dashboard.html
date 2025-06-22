@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Painel de Códigos</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #1e2a38;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background-color: #2d3e50;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .tabs button {
+      width: 49%;
+      padding: 10px;
+      border: none;
+      background-color: #00c6ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .tabs button.active {
+      background-color: #00a6dd;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #00c6ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .search-wrapper {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .search-wrapper input {
+      padding-right: 35px;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: black;
+      background: none;
+      border: none;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: #2d3e50;
+      margin: 15% auto;
+      padding: 20px;
+      width: 300px;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Painel de Códigos</h2>
+
+    <div class="tabs">
+      <button id="tabAdd" class="active" onclick="showTab('add')">Cadastrar Código</button>
+      <button id="tabSearch" onclick="showTab('search')">Buscar Código</button>
+    </div>
+
+    <!-- Aba Cadastrar -->
+  <div id="add" class="tab-content active">
+  <form onsubmit="addCode(event)">
+    <input type="text" id="code" placeholder="Código" required />
+    <input type="text" id="name" placeholder="Nome do Código" required />
+    <button type="submit">Cadastrar</button>
+  </form>
+  <p id="addMessage" style="margin-top: 10px; color: red;"></p>
+</div>
+
+<script>
+function addCode(event) {
+  event.preventDefault();
+  
+  const user = sessionStorage.getItem("loggedUser");
+  if (!user) {
+    alert("Você precisa estar logado.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  const code = document.getElementById("code").value.trim();
+  const name = document.getElementById("name").value.trim();
+  const messageElement = document.getElementById("addMessage");
+
+  if (!code || !name) {
+    messageElement.textContent = "Preencha todos os campos.";
+    return;
+  }
+
+  const data = JSON.parse(localStorage.getItem(user)) || { password: "", codes: {} };
+  if (!data.codes) data.codes = {};
+
+  // Verifica se o código já existe
+  if (data.codes.hasOwnProperty(code)) {
+    messageElement.textContent = `Erro: O código ${code} já está cadastrado.`;
+    return;
+  }
+
+  // Verifica se o nome já existe em algum código
+  const nameExists = Object.values(data.codes).some(
+    existingName => existingName.toLowerCase() === name.toLowerCase()
+  );
+  
+  if (nameExists) {
+    messageElement.textContent = `Erro: O nome "${name}" já está cadastrado com outro código.`;
+    return;
+  }
+
+  // Se passou nas validações, cadastra
+  data.codes[code] = name;
+  localStorage.setItem(user, JSON.stringify(data));
+
+  messageElement.style.color = "green";
+  messageElement.textContent = "Código cadastrado com sucesso!";
+  document.getElementById("code").value = "";
+  document.getElementById("name").value = "";
+  
+  // Limpa a mensagem após 3 segundos
+  setTimeout(() => {
+    messageElement.textContent = "";
+  }, 3000);
+}
+</script>
+
+    <!-- Aba Buscar -->
+  <div id="search" class="tab-content">
+  <form onsubmit="searchCode(event)">
+    <div class="search-wrapper">
+      <input type="text" id="searchInput" placeholder="Buscar por código" required />
+      <span class="search-icon" onclick="openModal()">🔍</span>
+    </div>
+    <button type="submit">Buscar</button>
+  </form>
+  <div id="result" style="margin-top: 10px; font-family: monospace;"></div>
+</div>
+
+<!-- Modal -->
+<div id="searchModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3>Buscar por nome</h3>
+    <input type="text" id="nameSearch" placeholder="Digite um nome" oninput="searchByName()" />
+    <p id="nameResult"></p>
+  </div>
+</div>
+
+<script>
+  // Função de busca por código modificada
+  function searchCode(event) {
+    event.preventDefault();
+    
+    const user = sessionStorage.getItem("loggedUser");
+    if (!user) {
+      alert("Você precisa estar logado.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    const code = document.getElementById("searchInput").value.trim();
+    const userData = JSON.parse(localStorage.getItem(user)) || { codes: {} };
+
+    if (!code) {
+      document.getElementById("result").textContent = "Digite um código para buscar.";
+      return;
+    }
+
+    if (userData.codes && userData.codes[code]) {
+      // Mostra no formato "CODIGO: valor" sem aspas
+      document.getElementById("result").textContent = 
+        `${code}: ${userData.codes[code]}`;
+    } else {
+      document.getElementById("result").textContent = "Código não encontrado.";
+    }
+  }
+
+  // Mantidas todas as outras funções originais
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(tabId).classList.add('active');
+    document.getElementById('tab' + capitalize(tabId)).classList.add('active');
+  }
+
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function openModal() {
+    document.getElementById("searchModal").style.display = "block";
+    document.getElementById("nameSearch").value = "";
+    document.getElementById("nameResult").innerText = "";
+  }
+
+  function closeModal() {
+    document.getElementById("searchModal").style.display = "none";
+  }
+
+  function searchByName() {
+    const query = document.getElementById("nameSearch").value.toLowerCase();
+    const user = sessionStorage.getItem("loggedUser");
+    const data = JSON.parse(localStorage.getItem(user));
+    let found = null;
+
+    for (const code in data.codes) {
+      const name = data.codes[code].toLowerCase();
+      if (name.includes(query)) {
+        found = `${code}: ${data.codes[code]}`; // Também formatado sem aspas
+        break;
+      }
+    }
+
+    document.getElementById("nameResult").innerText = found || "Nenhum resultado encontrado.";
+  }
+
+  window.onclick = function (event) {
+    const modal = document.getElementById("searchModal");
+    if (event.target === modal) {
+      closeModal();
+    }
+  };
+</script>

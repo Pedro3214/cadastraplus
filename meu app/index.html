@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form onsubmit="login(event)">
+      <input type="text" id="loginUser" placeholder="Usuário" required />
+      <input type="password" id="loginPass" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+    </form>
+    <a href="register.html">Não tem conta? Cadastre-se</a>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+<div class="tabs">
+
+<!-- Adicione isso junto aos outros elementos de login -->
+<button onclick="accessAdmin()" class="management-btn">🔒 Acesso Administrativo</button>
+
+<script>
+function accessAdmin() {
+  const password = prompt("Digite a senha de administrador:");
+  if (password === "bolochoco4") { // Substitua pela sua senha
+    window.location.href = "gerencia.html"; // Redireciona para a página separada
+  } else {
+    alert("Senha incorreta!");
+  }
+}
+</script>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Painel Administrativo - CadastraPlus</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            padding-top: 80px;
+        }
+        
+        .container {
+            background-color: rgba(30, 42, 56, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #00c6ff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .admin-actions button {
+            background: linear-gradient(to right, #00c6ff, #0082ff);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .admin-actions button:hover {
+            background: linear-gradient(to right, #00a6dd, #0062dd);
+            transform: translateY(-2px);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        th {
+            background: rgba(0,198,255,0.2);
+            color: #00c6ff;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        
+        button.danger {
+            background: linear-gradient(to right, #ff4444, #cc0000);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button.danger:hover {
+            background: linear-gradient(to right, #cc0000, #990000);
+        }
+        
+        .code-value {
+            font-family: 'Courier New', monospace;
+            color: #00ffaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Painel Administrativo</h1>
+        
+        <div class="admin-actions">
+            <button onclick="loadUsers()">👥 Carregar Usuários</button>
+            <button onclick="loadAllCodes()">🔢 Carregar Todos os Códigos</button>
+        </div>
+
+        <div id="dataContainer">
+            <!-- Os dados serão carregados aqui -->
+            <p style="text-align: center; color: #aaa;">Selecione uma ação acima</p>
+        </div>
+    </div>
+
+    <script>
+    // Função para carregar usuários
+    function loadUsers() {
+        let html = '<h2><span style="color:#00c6ff">👥</span> Usuários Cadastrados</h2>';
+        html += '<div style="overflow-x:auto;"><table>';
+        html += '<tr><th>Usuário</th><th>Quantidade de Códigos</th><th>Ações</th></tr>';
+        
+        // Percorre todos os usuários no localStorage
+        for (let i = 0; i < localStorage.length; i++) {
+            const user = localStorage.key(i);
+            const userData = JSON.parse(localStorage.getItem(user));
+            const codeCount = userData.codes ? Object.keys(userData.codes).length : 0;
+            
+            html += `
+                <tr>
+                    <td>${user}</td>
+                    <td>${codeCount}</td>
+                    <td>
+                        <button class="danger" onclick="deleteUser('${user}')">🗑️ Excluir Usuário</button>
+                        <button onclick="viewUserCodes('${user}')">👀 Ver Códigos</button>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        html += '</table></div>';
+        document.getElementById('dataContainer').innerHTML = html;
+    }
+
+    // Função para carregar TODOS os códigos
+    function loadAllCodes() {
+        let html = '<h2><span style="color:#00c6ff">🔢</span> Todos os Códigos</h2>';
+        html += '<div style="overflow-x:auto;"><table>';
+        html += '<tr><th>Usuário</th><th>Código</th><th>Nome</th><th>Ações</th></tr>';
+        
+        // Percorre todos os usuários e seus códigos
+        for (let i = 0; i < localStorage.length; i++) {
+            const user = localStorage.key(i);
+            const userData = JSON.parse(localStorage.getItem(user));
+            
+            if (userData.codes) {
+                Object.entries(userData.codes).forEach(([code, name]) => {
+                    html += `
+                        <tr>
+                            <td>${user}</td>
+                            <td class="code-value">${code}</td>
+                            <td>${name}</td>
+                            <td>
+                                <button class="danger" onclick="deleteCode('${user}', '${code}')">🗑️ Excluir</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+        
+        html += '</table></div>';
+        document.getElementById('dataContainer').innerHTML = html;
+    }
+
+    // Função para visualizar códigos de um usuário específico
+    function viewUserCodes(username) {
+        const userData = JSON.parse(localStorage.getItem(username));
+        let html = `<h2><span style="color:#00c6ff">👤</span> Códigos do Usuário: ${username}</h2>`;
+        html += '<div style="overflow-x:auto;"><table>';
+        html += '<tr><th>Código</th><th>Nome</th><th>Ações</th></tr>';
+        
+        if (userData.codes) {
+            Object.entries(userData.codes).forEach(([code, name]) => {
+                html += `
+                    <tr>
+                        <td class="code-value">${code}</td>
+                        <td>${name}</td>
+                        <td>
+                            <button class="danger" onclick="deleteCode('${username}', '${code}')">🗑️ Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } else {
+            html += '<tr><td colspan="3" style="text-align:center;">Nenhum código cadastrado</td></tr>';
+        }
+        
+        html += '</table></div>';
+        html += '<button onclick="loadUsers()" style="margin-top:20px;">↩️ Voltar para lista de usuários</button>';
+        document.getElementById('dataContainer').innerHTML = html;
+    }
+
+    // Função para excluir usuário
+    function deleteUser(username) {
+        if (confirm(`Tem certeza que deseja excluir o usuário ${username} e todos os seus códigos?`)) {
+            localStorage.removeItem(username);
+            loadUsers(); // Recarrega a lista
+            alert('Usuário excluído com sucesso!');
+        }
+    }
+
+    // Função para excluir código específico
+    function deleteCode(username, code) {
+        if (confirm(`Tem certeza que deseja excluir o código ${code} do usuário ${username}?`)) {
+            const userData = JSON.parse(localStorage.getItem(username));
+            delete userData.codes[code];
+            localStorage.setItem(username, JSON.stringify(userData));
+            
+            // Recarrega a visualização atual
+            if (document.getElementById('dataContainer').innerHTML.includes('Todos os Códigos')) {
+                loadAllCodes();
+            } else {
+                viewUserCodes(username);
+            }
+            
+            alert('Código excluído com sucesso!');
+        }
+    }
+    </script>
+</body>
+</html>

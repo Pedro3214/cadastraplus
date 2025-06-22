@@ -1,0 +1,270 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: linear-gradient(to right, #141e30, #243b55);
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding-top: 50px !important;
+}
+
+/* Cabeçalho CadastraPlus */
+body::before {
+  content: "CadastraPlus";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to right, #1a2a3a, #2c3e50);
+  color: white;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  letter-spacing: 1px;
+}
+
+.container {
+  background-color: rgba(30, 42, 56, 0.9);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 400px;
+  margin: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #00c6ff;
+}
+
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+input {
+  background: #324c63;
+  color: white;
+  border: 1px solid #405b74;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00c6ff;
+  box-shadow: 0 0 5px rgba(0,198,255,0.5);
+}
+
+button {
+  background: linear-gradient(to right, #00c6ff, #0082ff);
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button:hover {
+  background: linear-gradient(to right, #00a6dd, #0062dd);
+  transform: translateY(-2px);
+}
+
+/* BOTÃO DE GERENCIAMENTO (NOVO) */
+.management-btn {
+  background: linear-gradient(to right, #8B4513, #A0522D);
+  color: white;
+  padding: 12px 20px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  display: block;
+  width: 100%;
+  transition: all 0.3s;
+}
+
+.management-btn:hover {
+  background: linear-gradient(to right, #A0522D, #8B4513);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+a {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  color: #00c6ff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: #00a6dd;
+}
+
+/* === Estilos do Painel de Gerenciamento === */
+.user-section {
+  background: rgba(40, 60, 80, 0.7);
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border-left: 4px solid #00c6ff;
+}
+
+.user-section h4 {
+  color: #00c6ff;
+  margin-top: 0;
+  border-bottom: 1px solid #405b74;
+  padding-bottom: 8px;
+}
+
+.codes-list {
+  margin-top: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* Scrollbar personalizada */
+.codes-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.codes-list::-webkit-scrollbar-track {
+  background: #324c63;
+  border-radius: 10px;
+}
+
+.codes-list::-webkit-scrollbar-thumb {
+  background: #00c6ff;
+  border-radius: 10px;
+}
+
+.code-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(50, 70, 90, 0.7);
+  margin-bottom: 10px;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.code-item:hover {
+  background: rgba(60, 80, 100, 0.9);
+  transform: translateX(5px);
+}
+
+.code-item span {
+  font-family: 'Courier New', monospace;
+}
+
+.code-item button {
+  background: linear-gradient(to right, #ff4444, #cc0000);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: auto;
+  font-size: 0.9rem;
+  margin-left: 10px;
+}
+
+.code-item button:hover {
+  background: linear-gradient(to right, #cc0000, #990000);
+  transform: translateY(0);
+}
+
+/* Adaptação para o container do gerenciamento */
+#managementPanel {
+  background: rgba(30, 42, 56, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 2px solid #8B4513;
+}
+
+/* Estilos do painel de administração */
+.admin-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #8B4513;
+}
+
+.admin-header h3 {
+  color: #FFD700;
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.admin-header p {
+  color: #ddd;
+  margin-top: 5px;
+}
+
+#adminContent {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  body {
+    padding: 50px 10px !important;
+    display: block;
+  }
+  
+  .container {
+    max-width: 100%;
+    margin: 20px auto;
+  }
+  
+  .code-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .code-item button {
+    margin: 8px 0 0 0;
+    width: 100%;
+  }
+
+  .management-btn {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Estilos para abas/tabs (caso precise) */
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.tabs button {
+  width: auto;
+  padding: 10px 20px;
+}
